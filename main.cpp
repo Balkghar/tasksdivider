@@ -19,45 +19,74 @@ vector<string> split(const string &s, char delim) {
 }
 
 int main(int argc, char *argv[]) {
-  string namesInput;
+  string namesInput =
+      "hugo,aurelien,thomas,alexandre,mathieu,charles,aubry,laurent,vincent";
+  /*
   cout << "Enter a string of names separated by commas: ";
   getline(cin, namesInput);
-
+  */
   vector<string> names = split(namesInput, ',');
 
-  string tasksInput;
-  cout << "Enter a string of names separated by commas: ";
+  string tasksInput = "aspirateur,panosse,tiroir,table,frigo,placard,wc";
+  /*
+  cout << "Enter a string of tasks separated by commas: ";
   getline(cin, tasksInput);
-
+  */
   vector<string> tasks = split(tasksInput, ',');
 
-  int numberOfWeeks;
-  cout << "Enter a numberOfWeeks between 1 and 52: ";
-  cin >> numberOfWeeks;
-
+  int numberOfWeeks = 16; /*
+   cout << "Enter a numberOfWeeks between 1 and 52: ";
+   cin >> numberOfWeeks;
+ */
   while (numberOfWeeks < 1 || numberOfWeeks > 52) {
     cout << "Invalid numberOfWeeks. Please enter a numberOfWeeks between 1 and "
             "52: ";
     cin >> numberOfWeeks;
   }
 
-  unordered_map<string, int> hashMap;
+  int startingWeek = 4;
+
+  unordered_map<string, int> numberOfTaskDone;
 
   for (const auto &name : names) {
-    hashMap[name] = 0;
+    numberOfTaskDone[name] = 0;
   }
 
   vector<vector<string>> tasksPerPerson(numberOfWeeks,
                                         vector<string>(tasks.size()));
 
+  unordered_map<string, unordered_map<string, int>> taskNumber;
+
+  for (int i = 0; i < names.size(); i++) {
+    for (int j = 0; j < tasks.size(); j++) {
+      taskNumber[names[i]][tasks[j]] = 0;
+    }
+  }
+
   for (int i = 0; i < numberOfWeeks; i++) {
     vector<string> namesCopy = names;
 
     for (int j = 0; j < tasks.size(); j++) {
+
       int randomIndex = rand() % namesCopy.size();
+      for (int k = 0; k < namesCopy.size(); k++) {
+        if (numberOfTaskDone[namesCopy[randomIndex]] >
+                numberOfTaskDone[namesCopy[k]] ||
+            taskNumber[namesCopy[randomIndex]][tasks[j]] >
+                taskNumber[namesCopy[k]][tasks[j]]) {
+          randomIndex = k;
+        }
+      }
+
       tasksPerPerson[i][j] = namesCopy[randomIndex];
-      hashMap[namesCopy[randomIndex]]++;
+      numberOfTaskDone[namesCopy[randomIndex]]++;
+      taskNumber[namesCopy[randomIndex]][tasks[j]]++;
+
       namesCopy.erase(namesCopy.begin() + randomIndex);
+
+      if (namesCopy.size() < tasks.size() - j) {
+        namesCopy = names;
+      }
     }
   }
 
@@ -73,7 +102,7 @@ int main(int argc, char *argv[]) {
 
     // Write data
     for (int i = 0; i < numberOfWeeks; i++) {
-      outputFile << i + 1 << ",";
+      outputFile << i + startingWeek << ",";
       for (const auto &task : tasksPerPerson[i]) {
         outputFile << task << ",";
       }
@@ -84,6 +113,17 @@ int main(int argc, char *argv[]) {
     cout << "Tasks exported to tasks.csv" << endl;
   } else {
     cout << "Failed to open tasks.csv for writing" << endl;
+  }
+
+  for (int i = 0; i < names.size(); i++) {
+    cout << names[i] << " has " << numberOfTaskDone[names[i]] << " tasks"
+         << endl;
+  }
+  for (const auto &name : names) {
+    for (const auto &task : tasks) {
+      cout << name << " has done " << task << " " << taskNumber[name][task]
+           << endl;
+    }
   }
 
   return 0;
