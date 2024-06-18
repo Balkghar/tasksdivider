@@ -19,33 +19,29 @@ vector<string> split(const string &s, char delim) {
 }
 
 int main(int argc, char *argv[]) {
-  string namesInput = "Hugo,Émile,Greg,Killian";
-  /*
+
+  string namesInput;
+
   cout << "Enter a string of names separated by commas: ";
   getline(cin, namesInput);
-  */
+
   vector<string> names = split(namesInput, ',');
 
-  string tasksInput =
-      "lavabo,arrosage,aspirateur,panosse,surface,poubelle,tiroirs,Lessive";
-  /*
+  string tasksInput;
+
   cout << "Enter a string of tasks separated by commas: ";
   getline(cin, tasksInput);
-  */
   vector<string> tasks = split(tasksInput, ',');
 
-  int numberOfWeeks = 16; /*
-   cout << "Enter a numberOfWeeks between 1 and 52: ";
-   cin >> numberOfWeeks;
- */
-  while (numberOfWeeks < 1 || numberOfWeeks > 52) {
-    cout << "Invalid number of weeks. Please enter a number of weeks between 1 "
-            "and "
-            "52: ";
-    cin >> numberOfWeeks;
-  }
+  int numberOfWeeks;
 
-  int startingWeek = 4;
+  cout << "Enter a numberOfWeeks: ";
+  cin >> numberOfWeeks;
+
+  int startingWeek;
+  cout << "Enter the starting weeks: ";
+  ;
+  cin >> startingWeek;
 
   unordered_map<string, int> numberOfTaskDone;
 
@@ -58,44 +54,69 @@ int main(int argc, char *argv[]) {
 
   unordered_map<string, unordered_map<string, int>> taskNumber;
 
-  for (int i = 0; i < names.size(); i++) {
-    for (int j = 0; j < tasks.size(); j++) {
-      taskNumber[names[i]][tasks[j]] = 0;
+  int maxdiff = 2;
+  while (maxdiff >= 2) {
+
+    for (int i = 0; i < names.size(); i++) {
+      for (int j = 0; j < tasks.size(); j++) {
+        taskNumber[names[i]][tasks[j]] = 0;
+      }
     }
-  }
+    for (int i = 0; i < numberOfWeeks; i++) {
+      vector<string> namesCopy = names;
 
-  for (int i = 0; i < numberOfWeeks; i++) {
-    vector<string> namesCopy = names;
+      for (int j = 0; j < tasks.size(); j++) {
 
-    for (int j = 0; j < tasks.size(); j++) {
+        if (namesCopy.empty()) {
+          namesCopy = names;
+        }
 
-      int randomIndex = rand() % namesCopy.size();
-      for (int k = 0; k < namesCopy.size(); k++) {
-        if (numberOfTaskDone[namesCopy[randomIndex]] >
-                numberOfTaskDone[namesCopy[k]] ||
-            taskNumber[namesCopy[randomIndex]][tasks[j]] >
-                taskNumber[namesCopy[k]][tasks[j]]) {
-          randomIndex = k;
+        srand(time(0));
+        int randomIndex = rand() % namesCopy.size();
+        if (i != 0) {
+
+          for (int k = 0; k < namesCopy.size(); k++) {
+            if (numberOfTaskDone[namesCopy[randomIndex]] >
+                    numberOfTaskDone[namesCopy[k]] ||
+                taskNumber[namesCopy[randomIndex]][tasks[j]] >
+                    taskNumber[namesCopy[k]][tasks[j]]) {
+              randomIndex = k;
+            }
+          }
+        }
+
+        tasksPerPerson[i][j] = namesCopy[randomIndex];
+        numberOfTaskDone[namesCopy[randomIndex]]++;
+        taskNumber[namesCopy[randomIndex]][tasks[j]]++;
+
+        namesCopy.erase(namesCopy.begin() + randomIndex);
+      }
+    }
+    maxdiff = 0;
+    for (int i = 0; i < names.size(); i++) {
+
+      int max = 0;
+      int min = 0;
+      for (int j = 0; j < tasks.size(); j++) {
+        if (taskNumber[names[i]][tasks[j]] > taskNumber[names[i]][tasks[max]]) {
+          max = j;
+        }
+        if (taskNumber[names[i]][tasks[j]] < taskNumber[names[i]][tasks[min]]) {
+          min = j;
         }
       }
-
-      tasksPerPerson[i][j] = namesCopy[randomIndex];
-      numberOfTaskDone[namesCopy[randomIndex]]++;
-      taskNumber[namesCopy[randomIndex]][tasks[j]]++;
-
-      namesCopy.erase(namesCopy.begin() + randomIndex);
-
-      if (namesCopy.size() < tasks.size() - j) {
-        namesCopy = names;
+      if (maxdiff <
+          taskNumber[names[i]][tasks[max]] - taskNumber[names[i]][tasks[min]]) {
+        maxdiff =
+            taskNumber[names[i]][tasks[max]] - taskNumber[names[i]][tasks[min]];
       }
     }
   }
-
   // Export tasksPerPerson to a CSV file
   ofstream outputFile("./tasks.csv");
   if (outputFile.is_open()) {
     // Write header
-    outputFile << "Week,";
+    outputFile << "Weeks,";
     for (const auto &task : tasks) {
       outputFile << task << ",";
     }
@@ -103,7 +124,7 @@ int main(int argc, char *argv[]) {
 
     // Write data
     for (int i = 0; i < numberOfWeeks; i++) {
-      outputFile << i + startingWeek << ",";
+      outputFile << i + startingWeek + 1 << ",";
       for (const auto &task : tasksPerPerson[i]) {
         outputFile << task << ",";
       }
