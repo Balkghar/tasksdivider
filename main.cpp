@@ -19,15 +19,15 @@ vector<string> split(const string &s, char delim) {
 }
 
 int main(int argc, char *argv[]) {
-  string namesInput =
-      "hugo,aurelien,thomas,alexandre,mathieu,charles,aubry,laurent,vincent";
+  string namesInput = "Hugo,Émile,Greg,Killian";
   /*
   cout << "Enter a string of names separated by commas: ";
   getline(cin, namesInput);
   */
   vector<string> names = split(namesInput, ',');
 
-  string tasksInput = "aspirateur,panosse,tiroir,table,frigo,placard,wc";
+  string tasksInput =
+      "lavabo,arrosage,aspirateur,panosse,surface,poubelle,tiroirs,Lessive";
   /*
   cout << "Enter a string of tasks separated by commas: ";
   getline(cin, tasksInput);
@@ -39,7 +39,8 @@ int main(int argc, char *argv[]) {
    cin >> numberOfWeeks;
  */
   while (numberOfWeeks < 1 || numberOfWeeks > 52) {
-    cout << "Invalid numberOfWeeks. Please enter a numberOfWeeks between 1 and "
+    cout << "Invalid number of weeks. Please enter a number of weeks between 1 "
+            "and "
             "52: ";
     cin >> numberOfWeeks;
   }
