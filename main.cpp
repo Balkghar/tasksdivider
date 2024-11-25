@@ -1,8 +1,12 @@
 #include <iostream>
 #include <string>
 
+#include <algorithm>
+#include <cctype>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -24,13 +28,18 @@ int main(int argc, char *argv[]) {
 
   cout << "Enter a string of names separated by commas: ";
   getline(cin, namesInput);
-
+  namesInput.erase(
+      std::remove_if(namesInput.begin(), namesInput.end(), ::isspace),
+      namesInput.end());
   vector<string> names = split(namesInput, ',');
 
   string tasksInput;
 
   cout << "Enter a string of tasks separated by commas: ";
   getline(cin, tasksInput);
+  tasksInput.erase(
+      std::remove_if(tasksInput.begin(), tasksInput.end(), ::isspace),
+      tasksInput.end());
   vector<string> tasks = split(tasksInput, ',');
 
   int numberOfWeeks;
@@ -124,7 +133,7 @@ int main(int argc, char *argv[]) {
 
     // Write data
     for (int i = 0; i < numberOfWeeks; i++) {
-      outputFile << i + startingWeek + 1 << ",";
+      outputFile << i + startingWeek << ",";
       for (const auto &task : tasksPerPerson[i]) {
         outputFile << task << ",";
       }
