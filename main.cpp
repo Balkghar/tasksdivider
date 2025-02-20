@@ -12,6 +12,7 @@
 
 using namespace std;
 
+// split a string by a delimiter
 vector<string> split(const string &s, char delim) {
   vector<string> result;
   stringstream ss(s);
@@ -65,6 +66,8 @@ int main(int argc, char *argv[]) {
 
   int maxdiff = 2;
   while (maxdiff >= 2) {
+
+    numberOfTaskDone.clear();
 
     for (int i = 0; i < names.size(); i++) {
       for (int j = 0; j < tasks.size(); j++) {
