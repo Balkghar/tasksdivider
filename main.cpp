@@ -12,7 +12,7 @@
 
 using namespace std;
 
-// split a string by a delimiter
+// split a string by a delimiter, beacause I wanted
 vector<string> split(const string &s, char delim) {
   vector<string> result;
   stringstream ss(s);
